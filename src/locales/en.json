@@ -1,0 +1,8 @@
+{
+  "selector.desc": "Please select the folder where the database is: ",
+  "selector.selector": "Select",
+  "selector.open": "Open",
+  "selector.open.title": "Select database folder",
+  "selector.type": "Database type: ",
+  "selector.error.empty": "Please select a folder"
+}

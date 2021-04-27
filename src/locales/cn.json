@@ -1,0 +1,8 @@
+{
+  "selector.desc": "请选择数据库所在的文件夹: ",
+  "selector.select": "选择",
+  "selector.open": "打开",
+  "selector.open.title": "选择数据库文件夹",
+  "selector.type": "数据库类型: ",
+  "selector.error.empty": "请选择一个文件夹"
+}
