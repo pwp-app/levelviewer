@@ -13,6 +13,9 @@
         :on-minimize="minimize"
       >
         <span slot="title">LevelViewer</span>
+        <div slot="menu" class="top-menu">
+          <span class="top-menu__path" v-if="dbPath">{{ dbPath }}</span>
+        </div>
       </v-titlebar>
       <div class="page-main">
         <router-view></router-view>
@@ -22,6 +25,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'app',
   data() {
@@ -33,6 +38,11 @@ export default {
       isClosable: false,
       isMaximized: false,
     };
+  },
+  computed: {
+    ...mapState({
+      dbPath: (state) => state.dbPath,
+    }),
   },
   created() {
     window.ipcRenderer.once('init-titlebar', this.initTitlebar);
@@ -86,5 +96,14 @@ body,
 .page-main {
   width: 100%;
   height: calc(100% - 28px);
+}
+
+.top-menu {
+  &__path {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 28px;
+    -webkit-app-region: drag;
+  }
 }
 </style>

@@ -44,17 +44,47 @@ const events = {
     win.webContents.send('dbpath-selected', res.filePaths);
   },
   'open-database': async (_, opts) => {
+    if (currentDb) {
+      currentDb.close();
+    }
     try {
       const db = await openDatabase(opts.path, opts.type);
-      console.log(db);
       if (!db) {
         win.webContents.send('db-open-failed', 'error.cannot_locate_db');
         return;
       }
       win.webContents.send('db-opened');
+      // eslint-disable-next-line require-atomic-updates
+      currentDb = db;
     } catch (err) {
       win.webContents.send('db-open-failed', err.message);
     }
+  },
+  'query-keys': async (_, opts) => {
+    const keys = [];
+    const queryOpts = {
+      limit: 1000,
+    };
+    if (opts) {
+      if (opts.limit) {
+        Object.assign(queryOpts, {
+          limit: opts.limit,
+        });
+      }
+      if (opts.bound) {
+        Object.assign(queryOpts, {
+          gt: opts.bound,
+        });
+      }
+    }
+    currentDb
+      .createKeyStream(queryOpts)
+      .on('data', (data) => {
+        keys.push(data);
+      })
+      .on('end', () => {
+        win.webContents.send('db-data', keys);
+      });
   },
 };
 

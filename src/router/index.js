@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Selector from '../views/Selector.vue';
+import Viewer from '../views/Viewer.vue';
 
 Vue.use(VueRouter);
 
@@ -9,6 +10,11 @@ const routes = [
     path: '/',
     name: 'Selector',
     component: Selector,
+  },
+  {
+    path: '/viewer',
+    name: 'Viewer',
+    component: Viewer,
   },
 ];
 

@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
   data() {
     return {
@@ -45,7 +47,7 @@ export default {
       openLoading: false,
     };
   },
-  beforeCreate() {
+  created() {
     // ipc events
     window.ipcRenderer.on('dbpath-selected', (_, paths) => {
       if (!Array.isArray(paths) || !paths.length) {
@@ -61,9 +63,13 @@ export default {
       }
       this.openLoading = false;
     });
-    window.ipcRenderer.on('db-opened', () => {});
+    window.ipcRenderer.on('db-opened', () => {
+      this.setDbPath(this.selectedPath);
+      this.$router.push('/viewer');
+    });
   },
   methods: {
+    ...mapMutations(['setDbPath']),
     handleTypeChanged(type) {
       this.selectedType = type;
     },
