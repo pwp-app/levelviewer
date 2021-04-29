@@ -39,26 +39,30 @@ export default {
       listItems: [],
       keyItem,
       value: '',
+      listeners: [],
     };
   },
   components: {
     'virtual-list': VirtualList,
   },
   created() {
-    window.ipcRenderer.on('db-keys', this.handleQueryResult);
-    window.ipcRenderer.on('value-gotten', this.handleValueGotten);
+    this.listeners.push(
+      window.ipcRenderer.on('db-keys', this.handleQueryResult),
+      window.ipcRenderer.on('value-gotten', this.handleValueGotten),
+    );
     this.queryData();
   },
   beforeDestroy() {
-    window.ipcRenderer.off('db-keys', this.handleQueryResult);
-    window.ipcRenderer.off('value-gotten', this.handleValueGotten);
+    this.listeners.forEach((listener) => {
+      listener.remove();
+    });
   },
   methods: {
     queryData() {
       window.ipcRenderer.send('query-keys');
     },
     // ipc events
-    handleQueryResult(_, result) {
+    handleQueryResult(result) {
       const decoder = new TextDecoder();
       this.listItems = this.listItems.concat(
         result.map((key) => {
@@ -69,7 +73,7 @@ export default {
         }),
       );
     },
-    handleValueGotten(_, value) {
+    handleValueGotten(value) {
       const decoder = new TextDecoder();
       this.value = decoder.decode(value);
     },
@@ -92,7 +96,7 @@ export default {
     padding-right: 8px;
     &-title {
       padding-bottom: 8px;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 20px;
       border-bottom: 1px solid #dfdfdf;
       user-select: none;
@@ -102,6 +106,7 @@ export default {
       height: calc(100% - 65px);
       padding: 8px 0;
       position: relative;
+      overflow-y: auto;
       .viewer-list-empty {
         font-size: 13px;
         color: var(--text-primary);
@@ -114,7 +119,7 @@ export default {
     float: right;
     position: relative;
     &-title {
-      font-size: 14px;
+      font-size: 13px;
       line-height: 20px;
       border-bottom: 1px solid #dfdfdf;
       padding-bottom: 8px;
@@ -139,6 +144,7 @@ export default {
         color: var(--text-primary);
         white-space: pre-wrap;
         word-wrap: break-word;
+        overflow-y: auto;
       }
     }
   }

@@ -14,6 +14,14 @@
       >
         <span slot="title">LevelViewer</span>
         <div slot="menu" class="top-menu">
+          <div class="top-menu-items">
+            <div class="top-menu-item" v-if="dbPath" @click="backToSelector">
+              <span>{{ $t('menu.open') }}</span>
+            </div>
+            <div class="top-menu-item" @click="openAbout">
+              <span>{{ $t('menu.about') }}</span>
+            </div>
+          </div>
           <span class="top-menu__path" v-if="dbPath">{{ dbPath }}</span>
         </div>
       </v-titlebar>
@@ -21,14 +29,19 @@
         <router-view></router-view>
       </div>
     </div>
+    <About v-if="showAbout" @close="handleAboutClose" />
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
+import About from './views/components/About.vue';
 
 export default {
   name: 'app',
+  components: {
+    About,
+  },
   data() {
     return {
       titlebarInited: false,
@@ -37,6 +50,7 @@ export default {
       isMinimizable: false,
       isClosable: false,
       isMaximized: false,
+      showAbout: false,
     };
   },
   computed: {
@@ -46,13 +60,14 @@ export default {
   },
   created() {
     window.ipcRenderer.once('init-titlebar', this.initTitlebar);
-    window.ipcRenderer.on('window-is-maximized', (_, status) => {
+    window.ipcRenderer.on('window-is-maximized', (status) => {
       this.isMaximized = status;
     });
     window.ipcRenderer.send('do-init-titlebar');
   },
   methods: {
-    initTitlebar(e, info) {
+    ...mapMutations(['setDbPath']),
+    initTitlebar(info) {
       const { platform, isMaximizable, isMinimizable, isClosable } = info;
       this.platform = platform;
       this.isMaximizable = isMaximizable;
@@ -71,6 +86,22 @@ export default {
     },
     minimize() {
       window.ipcRenderer.send('titlebar-event', 'minimize');
+    },
+    backToSelector() {
+      if (this.$route.path !== '/') {
+        this.$confirm(this.$t('confirm.openNew'))
+          .then(() => {
+            this.setDbPath(null);
+            this.$router.push('/');
+          })
+          .catch(() => {});
+      }
+    },
+    openAbout() {
+      this.showAbout = true;
+    },
+    handleAboutClose() {
+      this.showAbout = false;
     },
   },
 };
@@ -99,11 +130,31 @@ body,
 }
 
 .top-menu {
+  width: 100%;
   &__path {
+    margin-left: 8px;
     font-size: 13px;
     color: var(--text-primary);
     line-height: 28px;
     -webkit-app-region: drag;
+  }
+  &-items {
+    font-size: 12px;
+    height: 28px;
+    line-height: 28px;
+    display: inline-block;
+    .top-menu-item {
+      height: 28px;
+      display: inline-block;
+      padding: 0 6px;
+      -webkit-app-region: none;
+      span {
+        line-height: 28px;
+      }
+    }
+    .top-menu-item:hover {
+      background: #d8d8d8;
+    }
   }
 }
 </style>

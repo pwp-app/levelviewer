@@ -45,33 +45,45 @@ export default {
       selectedType: 'leveldb',
       selectedPath: null,
       openLoading: false,
+      listeners: [],
     };
   },
   created() {
     // ipc events
-    window.ipcRenderer.on('dbpath-selected', this.handlePathSelected);
-    window.ipcRenderer.on('db-open-failed', this.handleDbOpenFailed);
-    window.ipcRenderer.on('db-opened', this.handleDbOpened);
+    this.listeners.push(
+      window.ipcRenderer.on('dbpath-selected', this.handlePathSelected),
+      window.ipcRenderer.on('db-open-failed', this.handleDbOpenFailed),
+      window.ipcRenderer.on('db-opened', this.handleDbOpened),
+    );
   },
   beforeDestroy() {
-    window.ipcRenderer.off('dbpath-selected', this.handlePathSelected);
-    window.ipcRenderer.off('db-open-failed', this.handleDbOpenFailed);
-    window.ipcRenderer.off('db-opened', this.handleDbOpened);
+    this.listeners.forEach((listener) => {
+      listener.remove();
+    });
   },
   methods: {
     ...mapMutations(['setDbPath']),
     // ipc events
-    handlePathSelected(_, paths) {
+    handlePathSelected(paths) {
       if (!Array.isArray(paths) || !paths.length) {
-        this.$message.error(this.$t('selector.error.empty'));
+        this.$message.error({
+          message: this.$t('selector.error.empty'),
+          offset: 36,
+        });
       }
       this.selectedPath = paths[0];
     },
-    handleDbOpenFailed(_, err) {
+    handleDbOpenFailed(err) {
       if (err.includes('create_if_missing')) {
-        this.$message.error(this.$t('error.cannot_locate_db'));
+        this.$message.error({
+          message: this.$t('error.cannot_locate_db'),
+          offset: 36,
+        });
       } else {
-        this.$message.error(this.$t(err));
+        this.$message.error({
+          message: this.$t(err),
+          offset: 36,
+        });
       }
       this.openLoading = false;
     },

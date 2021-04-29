@@ -1,5 +1,6 @@
 import { dialog, ipcMain } from 'electron';
 import { openDatabase } from '../utils/db';
+import packageInfo from '../../package.json';
 
 let win;
 // eslint-disable-next-line no-unused-vars
@@ -96,6 +97,9 @@ const events = {
       }
     }
     win.webContents.send('value-gotten', value);
+  },
+  'fetch-version': () => {
+    win.webContents.send('version', packageInfo.version);
   },
 };
 
