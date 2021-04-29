@@ -11,6 +11,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     ipcRenderer.once(channel, listener);
   },
   off: (channel, listener) => {
-    ipcRenderer.removeEventListener(channel, listener);
+    ipcRenderer.off(channel, listener);
   },
 });

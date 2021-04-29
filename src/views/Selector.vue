@@ -49,27 +49,37 @@ export default {
   },
   created() {
     // ipc events
-    window.ipcRenderer.on('dbpath-selected', (_, paths) => {
+    window.ipcRenderer.on('dbpath-selected', this.handlePathSelected);
+    window.ipcRenderer.on('db-open-failed', this.handleDbOpenFailed);
+    window.ipcRenderer.on('db-opened', this.handleDbOpened);
+  },
+  beforeDestroy() {
+    window.ipcRenderer.off('dbpath-selected', this.handlePathSelected);
+    window.ipcRenderer.off('db-open-failed', this.handleDbOpenFailed);
+    window.ipcRenderer.off('db-opened', this.handleDbOpened);
+  },
+  methods: {
+    ...mapMutations(['setDbPath']),
+    // ipc events
+    handlePathSelected(_, paths) {
       if (!Array.isArray(paths) || !paths.length) {
         this.$message.error(this.$t('selector.error.empty'));
       }
       this.selectedPath = paths[0];
-    });
-    window.ipcRenderer.on('db-open-failed', (_, err) => {
+    },
+    handleDbOpenFailed(_, err) {
       if (err.includes('create_if_missing')) {
         this.$message.error(this.$t('error.cannot_locate_db'));
       } else {
         this.$message.error(this.$t(err));
       }
       this.openLoading = false;
-    });
-    window.ipcRenderer.on('db-opened', () => {
+    },
+    handleDbOpened() {
       this.setDbPath(this.selectedPath);
       this.$router.push('/viewer');
-    });
-  },
-  methods: {
-    ...mapMutations(['setDbPath']),
+    },
+    // ui events
     handleTypeChanged(type) {
       this.selectedType = type;
     },

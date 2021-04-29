@@ -83,8 +83,19 @@ const events = {
         keys.push(data);
       })
       .on('end', () => {
-        win.webContents.send('db-data', keys);
+        win.webContents.send('db-keys', keys);
       });
+  },
+  'query-value': async (_, key) => {
+    let value;
+    try {
+      value = await currentDb.get(key);
+    } catch (err) {
+      if (err.notFound) {
+        return;
+      }
+    }
+    win.webContents.send('value-gotten', value);
   },
 };
 

@@ -22,7 +22,7 @@
         <span>Value</span>
       </div>
       <div class="viewer-main-body">
-        <pre></pre>
+        <pre v-text="value"></pre>
       </div>
     </div>
   </div>
@@ -38,19 +38,26 @@ export default {
     return {
       listItems: [],
       keyItem,
+      value: '',
     };
   },
   components: {
     'virtual-list': VirtualList,
   },
   created() {
-    window.ipcRenderer.on('db-data', this.handleQueryResult);
+    window.ipcRenderer.on('db-keys', this.handleQueryResult);
+    window.ipcRenderer.on('value-gotten', this.handleValueGotten);
     this.queryData();
+  },
+  beforeDestroy() {
+    window.ipcRenderer.off('db-keys', this.handleQueryResult);
+    window.ipcRenderer.off('value-gotten', this.handleValueGotten);
   },
   methods: {
     queryData() {
       window.ipcRenderer.send('query-keys');
     },
+    // ipc events
     handleQueryResult(_, result) {
       const decoder = new TextDecoder();
       this.listItems = this.listItems.concat(
@@ -61,6 +68,10 @@ export default {
           };
         }),
       );
+    },
+    handleValueGotten(_, value) {
+      const decoder = new TextDecoder();
+      this.value = decoder.decode(value);
     },
   },
 };
@@ -75,18 +86,60 @@ export default {
   position: relative;
   &-aside {
     float: left;
-    width: 280px;
+    width: 240px;
     height: 100%;
+    border-right: 1px solid #dfdfdf;
+    padding-right: 8px;
     &-title {
       padding-bottom: 8px;
       font-size: 14px;
       line-height: 20px;
       border-bottom: 1px solid #dfdfdf;
       user-select: none;
+      color: var(--text-primary);
     }
     &-body {
       height: calc(100% - 65px);
       padding: 8px 0;
+      position: relative;
+      .viewer-list-empty {
+        font-size: 13px;
+        color: var(--text-primary);
+      }
+    }
+  }
+  &-main {
+    width: calc(100% - 264px);
+    height: 100%;
+    float: right;
+    position: relative;
+    &-title {
+      font-size: 14px;
+      line-height: 20px;
+      border-bottom: 1px solid #dfdfdf;
+      padding-bottom: 8px;
+      user-select: none;
+      color: var(--text-primary);
+    }
+    &-body {
+      width: 100%;
+      height: calc(100% - 30px);
+      padding-top: 8px;
+      box-sizing: border-box;
+      position: relative;
+      pre {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #dfdfdf;
+        margin: 0;
+        padding: 12px;
+        font-size: 12px;
+        font-family: consola;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
     }
   }
 }

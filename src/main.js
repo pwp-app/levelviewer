@@ -10,6 +10,8 @@ Vue.config.productionTip = false;
 
 Vue.use(VueTitlebar);
 
+Vue.prototype.$bus = new Vue();
+
 new Vue({
   router,
   i18n,

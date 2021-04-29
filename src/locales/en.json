@@ -4,5 +4,6 @@
   "selector.open": "Open",
   "selector.open.title": "Select database folder",
   "selector.type": "Database type: ",
-  "selector.error.empty": "Please select a folder"
+  "selector.error.empty": "Please select a folder",
+  "viewer.empty": "No data"
 }
