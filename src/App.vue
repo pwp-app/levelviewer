@@ -157,4 +157,25 @@ body,
     }
   }
 }
+
+.custom-scroll {
+  overflow-y: auto;
+}
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scroll::-webkit-scrollbar-button {
+  display: none;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  width: 4px;
+  border-radius: 4px;
+  background: #d2d2d2;
+}
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f6f6f6;
+}
+.custom-scroll::-webkit-scrollbar-corner {
+  background: #f6f6f6;
+}
 </style>

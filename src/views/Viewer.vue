@@ -4,17 +4,17 @@
       <div class="viewer-aside-title">
         <span>Keys</span>
       </div>
-      <div class="viewer-aside-body">
+      <div class="viewer-aside-body custom-scroll">
         <virtual-list
           class="viewer-list"
-          v-if="listItems.length"
           :data-key="'id'"
           :data-sources="listItems"
           :data-component="keyItem"
         />
-        <div class="viewer-list viewer-list-empty" v-else>
-          <span>{{ this.$t('viewer.empty') }}</span>
-        </div>
+        <infinite-loading @infinite="infiniteHandler" :identifier="dbPath">
+          <span class="status-text" slot="no-results">{{ $t('loading.noResults') }}</span>
+          <span class="status-text" slot="no-more">{{ $t('loading.noMore') }}</span>
+        </infinite-loading>
       </div>
     </div>
     <div class="viewer-main">
@@ -22,7 +22,7 @@
         <span>Value</span>
       </div>
       <div class="viewer-main-body">
-        <pre v-text="value"></pre>
+        <pre class="custom-scroll" v-text="value"></pre>
       </div>
     </div>
   </div>
@@ -30,8 +30,10 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid';
+import { mapState } from 'vuex';
 import VirtualList from 'vue-virtual-scroll-list';
 import keyItem from './components/KeyItem';
+import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
   data() {
@@ -44,6 +46,7 @@ export default {
   },
   components: {
     'virtual-list': VirtualList,
+    InfiniteLoading,
   },
   created() {
     this.listeners.push(
@@ -57,7 +60,16 @@ export default {
       listener.remove();
     });
   },
+  computed: {
+    ...mapState({
+      dbPath: (state) => state.dbPath,
+    }),
+  },
   methods: {
+    infiniteHandler($state) {
+      this.infiniteState = $state;
+      this.queryData();
+    },
     queryData() {
       window.ipcRenderer.send('query-keys');
     },
@@ -72,6 +84,12 @@ export default {
           };
         }),
       );
+      if (this.listItems.length) {
+        this.infiniteState && this.infiniteState.loaded();
+      }
+      if (this.listItems.length < 1000) {
+        this.infiniteState && this.infiniteState.complete();
+      }
     },
     handleValueGotten(value) {
       const decoder = new TextDecoder();
@@ -104,9 +122,9 @@ export default {
     }
     &-body {
       height: calc(100% - 65px);
+      max-height: calc(100% - 65px);
       padding: 8px 0;
       position: relative;
-      overflow-y: auto;
       .viewer-list-empty {
         font-size: 13px;
         color: var(--text-primary);
@@ -147,6 +165,15 @@ export default {
         overflow-y: auto;
       }
     }
+  }
+}
+
+.infinite-status-prompt {
+  margin-top: 8px;
+  .status-text {
+    width: 100%;
+    font-size: 12px;
+    user-select: none;
   }
 }
 </style>

@@ -8,5 +8,7 @@
   "selector.type": "Database type: ",
   "selector.error.empty": "Please select a folder",
   "viewer.empty": "No data",
-  "confirm.openNew": "Confirm to open a new database?"
+  "confirm.openNew": "Confirm to open a new database?",
+  "loading.noMore": "No more data",
+  "loading.noResults": "No data"
 }

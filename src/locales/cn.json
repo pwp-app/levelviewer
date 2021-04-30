@@ -8,5 +8,7 @@
   "selector.type": "数据库类型: ",
   "selector.error.empty": "请选择一个文件夹",
   "viewer.empty": "暂无数据",
-  "confirm.openNew": "确定要打开一个新的数据库吗？"
+  "confirm.openNew": "确定要打开一个新的数据库吗？",
+  "loading.noMore": "没有更多数据了",
+  "loading.noResults": "没有数据"
 }
