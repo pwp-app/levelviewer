@@ -16,6 +16,8 @@ async function createWindow() {
   const conf = {
     width: 800,
     height: 600,
+    minWidth: 600,
+    minHeight: 400,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
