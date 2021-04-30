@@ -1,19 +1,11 @@
-# levelviewer
+# LevelViewer
 
-## Project setup
-```
-npm install
-```
+Browse your LevelDB or RocksDB in GUI.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## IMPORTANT
 
-### Compiles and minifies for production
-```
-npm run build
-```
+This tool can only browser the LevelDB or RocksDB created by [Level](https://leveljs.org), and be sure the type of the keys and values in database are `String` (Tool will use `TextDecoder` to decode keys and values by default).
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## License
+
+MIT
