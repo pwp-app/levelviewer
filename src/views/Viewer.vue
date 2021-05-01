@@ -3,12 +3,13 @@
     <div class="viewer-aside">
       <div class="viewer-aside-title">
         <span>Keys</span>
-        <i class="el-icon-refresh-right"></i>
+        <i class="el-icon-refresh-right" @click="handleListRefresh"></i>
       </div>
       <div class="viewer-aside-body custom-scroll">
         <virtual-list
           class="viewer-list"
           :data-key="'id'"
+          v-if="showList"
           :data-sources="listItems"
           :data-component="keyItem"
         />
@@ -16,6 +17,9 @@
           <span slot="no-results"></span>
           <span slot="no-more"></span>
         </infinite-loading>
+        <div class="viewer-list viewer-list-empty" v-if="!showList">
+          <span>{{ this.$t('viewer.empty') }}</span>
+        </div>
       </div>
     </div>
     <div class="viewer-main">
@@ -36,6 +40,10 @@ import keyItem from './components/KeyItem';
 import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
+  components: {
+    'virtual-list': VirtualList,
+    InfiniteLoading,
+  },
   data() {
     return {
       listItems: [],
@@ -47,9 +55,10 @@ export default {
       bound: '',
     };
   },
-  components: {
-    'virtual-list': VirtualList,
-    InfiniteLoading,
+  computed: {
+    showList() {
+      return !!this.listItems.length;
+    },
   },
   created() {
     this.listeners.push(
@@ -80,6 +89,11 @@ export default {
     queryData(opts) {
       window.ipcRenderer.send('query-keys', opts || null);
     },
+    handleListRefresh() {
+      this.$set(this, 'listItems', []);
+      this.identifier += 1;
+      this.value = '';
+    },
     // ipc events
     handleQueryResult(result) {
       this.listItems = this.listItems.concat(
@@ -90,14 +104,13 @@ export default {
           };
         }),
       );
-      if (this.listItems.length < 1000) {
-        this.infiniteState && this.infiniteState.complete();
-      } else if (this.listItems.length) {
+      if (this.listItems.length) {
         this.infiniteState && this.infiniteState.loaded();
-        this.bound = this.$decoder.decode(this.listItems[this.listItems.length - 1].key);
-      } else {
-        this.$message.error(this.$t('erorr.query'));
-        this.infiniteState && this.infiniteState.complete();
+        if (this.listItems.length < 1000) {
+          this.infiniteState && this.infiniteState.complete();
+        } else {
+          this.bound = this.$decoder.decode(this.listItems[this.listItems.length - 1].key);
+        }
       }
     },
     handleValueGotten(value) {
@@ -123,7 +136,6 @@ export default {
         this.$message.success({
           message: this.$t('delete.success'),
           offset: 36,
-          duration: 2000,
         });
         if (result.key === this.selected) {
           this.value = '';
@@ -132,7 +144,6 @@ export default {
         this.$message.error({
           message: this.$t('delete.error'),
           offset: 36,
-          duration: 2000,
         });
         // eslint-disable-next-line no-console
         console.error('Failed to delete key.', result.err);
@@ -169,6 +180,11 @@ export default {
       }
       i {
         justify-self: flex-end;
+        transition: color 100ms ease;
+        cursor: pointer;
+      }
+      i:hover {
+        color: #999;
       }
     }
     &-body {
