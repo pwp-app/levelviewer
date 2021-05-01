@@ -11,6 +11,7 @@ Vue.config.productionTip = false;
 Vue.use(VueTitlebar);
 
 Vue.prototype.$bus = new Vue();
+Vue.prototype.$decoder = new TextDecoder();
 
 new Vue({
   router,

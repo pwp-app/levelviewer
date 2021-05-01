@@ -10,5 +10,10 @@
   "viewer.empty": "暂无数据",
   "confirm.openNew": "确定要打开一个新的数据库吗？",
   "loading.noMore": "没有更多数据了",
-  "loading.noResults": "没有数据"
+  "loading.noResults": "没有数据",
+  "menu.copy": "复制",
+  "menu.delete": "删除",
+  "confirm.deleteKey": "确定要删除\"{key}\"吗？",
+  "delete.success": "删除成功",
+  "delete.error": "删除失败"
 }

@@ -69,6 +69,7 @@ export default {
         this.$message.error({
           message: this.$t('selector.error.empty'),
           offset: 36,
+          duration: 2000,
         });
       }
       this.selectedPath = paths[0];
@@ -78,11 +79,13 @@ export default {
         this.$message.error({
           message: this.$t('error.cannot_locate_db'),
           offset: 36,
+          duration: 2000,
         });
       } else {
         this.$message.error({
           message: this.$t(err),
           offset: 36,
+          duration: 2000,
         });
       }
       this.openLoading = false;

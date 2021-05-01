@@ -5,8 +5,9 @@
       'viewer-list__item--selected': selected,
     }"
     @click="handleKeyClicked"
+    @contextmenu="handleContextMenu"
   >
-    <span :title="source.text">{{ source.text }}</span>
+    <span :title="decodedKey">{{ decodedKey }}</span>
   </div>
 </template>
 
@@ -24,7 +25,13 @@ export default {
   data() {
     return {
       selected: false,
+      decoder: new TextDecoder(),
     };
+  },
+  computed: {
+    decodedKey() {
+      return this.decoder.decode(this.source.key);
+    },
   },
   created() {
     this.$bus.$on('key-selected', this.handleKeySelected);
@@ -34,14 +41,38 @@ export default {
   },
   methods: {
     handleKeySelected(key) {
-      if (key !== this.source.text) {
+      if (key !== this.decodedKey) {
         this.selected = false;
       }
     },
     handleKeyClicked() {
-      this.$bus.$emit('key-selected', this.source.text);
+      this.$bus.$emit('key-selected', this.decodedKey);
       this.selected = true;
-      window.ipcRenderer.send('query-value', this.source.text);
+      window.ipcRenderer.send('query-value', this.decodedKey);
+    },
+    handleContextMenu(e) {
+      window.ipcRenderer.send('popup-menu', {
+        position: {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        template: [
+          {
+            label: this.$t('menu.copy'),
+            action: {
+              type: 'copy-key',
+              key: this.decodedKey,
+            },
+          },
+          {
+            action: {
+              type: 'delete-key',
+              key: this.decodedKey,
+            },
+            label: this.$t('menu.delete'),
+          },
+        ],
+      });
     },
   },
 };

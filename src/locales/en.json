@@ -10,5 +10,10 @@
   "viewer.empty": "No data",
   "confirm.openNew": "Confirm to open a new database?",
   "loading.noMore": "No more data",
-  "loading.noResults": "No data"
+  "loading.noResults": "No data",
+  "menu.copy": "Copy",
+  "menu.delete": "Delete",
+  "confirm.deleteKey": "Do you really want to delete \"{key}\"?",
+  "delete.success": "The key has been deleted",
+  "delete.error": "Failed to delete the key"
 }

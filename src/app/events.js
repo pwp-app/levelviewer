@@ -1,4 +1,5 @@
-import { dialog, ipcMain } from 'electron';
+/* eslint-disable no-param-reassign */
+import { dialog, ipcMain, Menu } from 'electron';
 import { openDatabase } from '../utils/db';
 import packageInfo from '../../package.json';
 
@@ -100,6 +101,48 @@ const events = {
   },
   'fetch-version': () => {
     win.webContents.send('version', packageInfo.version);
+  },
+  'popup-menu': (_, opts) => {
+    const { position, template } = opts;
+    const menu = Menu.buildFromTemplate(
+      template.map((item) => {
+        if (item.action) {
+          const { type } = item.action;
+          if (type === 'delete-key') {
+            const { key } = item.action;
+            item.click = () => {
+              win.webContents.send('delete-key', key);
+            };
+          }
+          if (type === 'copy-key') {
+            const { key } = item.action;
+            item.click = () => {
+              win.webContents.send('copy-key', key);
+            };
+          }
+          delete item.action;
+        }
+        return item;
+      }),
+    );
+    menu.popup({
+      x: position.x,
+      y: position.y,
+    });
+  },
+  'delete-key': async (_, key) => {
+    try {
+      await currentDb.del(key);
+      win.webContents.send('delete-result', {
+        type: 'success',
+        key,
+      });
+    } catch (err) {
+      win.webContents.send('delete-result', {
+        type: 'error',
+        err,
+      });
+    }
   },
 };
 
