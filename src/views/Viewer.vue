@@ -3,6 +3,7 @@
     <div class="viewer-aside">
       <div class="viewer-aside-title">
         <span>Keys</span>
+        <i class="el-icon-refresh-right"></i>
       </div>
       <div class="viewer-aside-body custom-scroll">
         <virtual-list
@@ -12,8 +13,8 @@
           :data-component="keyItem"
         />
         <infinite-loading @infinite="infiniteHandler" :identifier="identifier">
-          <span class="status-text" slot="no-results">{{ $t('loading.noResults') }}</span>
-          <span class="status-text" slot="no-more">{{ $t('loading.noMore') }}</span>
+          <span slot="no-results"></span>
+          <span slot="no-more"></span>
         </infinite-loading>
       </div>
     </div>
@@ -43,6 +44,7 @@ export default {
       listeners: [],
       identifier: 1,
       selected: '',
+      bound: '',
     };
   },
   components: {
@@ -58,7 +60,6 @@ export default {
       window.ipcRenderer.on('delete-result', this.handleDeleteResult),
     );
     this.$bus.$on('key-selected', this.handleKeySelected);
-    this.queryData();
   },
   beforeDestroy() {
     this.listeners.forEach((listener) => {
@@ -68,10 +69,16 @@ export default {
   methods: {
     infiniteHandler($state) {
       this.infiniteState = $state;
-      this.queryData();
+      if (!this.bound) {
+        this.queryData();
+      } else {
+        this.queryData({
+          bound: this.bound,
+        });
+      }
     },
-    queryData() {
-      window.ipcRenderer.send('query-keys');
+    queryData(opts) {
+      window.ipcRenderer.send('query-keys', opts || null);
     },
     // ipc events
     handleQueryResult(result) {
@@ -83,10 +90,13 @@ export default {
           };
         }),
       );
-      if (this.listItems.length) {
-        this.infiniteState && this.infiniteState.loaded();
-      }
       if (this.listItems.length < 1000) {
+        this.infiniteState && this.infiniteState.complete();
+      } else if (this.listItems.length) {
+        this.infiniteState && this.infiniteState.loaded();
+        this.bound = this.$decoder.decode(this.listItems[this.listItems.length - 1].key);
+      } else {
+        this.$message.error(this.$t('erorr.query'));
         this.infiniteState && this.infiniteState.complete();
       }
     },
@@ -152,6 +162,14 @@ export default {
       border-bottom: 1px solid #dfdfdf;
       user-select: none;
       color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      span {
+        flex: 1;
+      }
+      i {
+        justify-self: flex-end;
+      }
     }
     &-body {
       height: calc(100% - 65px);
@@ -198,15 +216,6 @@ export default {
         overflow-y: auto;
       }
     }
-  }
-}
-
-.infinite-status-prompt {
-  margin-top: 8px;
-  .status-text {
-    width: 100%;
-    font-size: 12px;
-    user-select: none;
   }
 }
 </style>
