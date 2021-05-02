@@ -22,7 +22,14 @@ module.exports = {
     },
     electronBuilder: {
       preload: 'src/preload.js',
-      builderOptions: ['github'],
+      builderOptions: {
+        appId: 'levelviewer.pwp.app',
+        productName: 'LevelViewer',
+        publish: ['github'],
+        win: {
+          publisherName: 'pwp.app',
+        },
+      },
     },
   },
 };

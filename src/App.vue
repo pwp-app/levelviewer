@@ -92,7 +92,9 @@ export default {
         this.$confirm(this.$t('confirm.openNew'))
           .then(() => {
             this.setDbPath(null);
-            this.$router.push('/');
+            this.$router.push({
+              name: 'selector',
+            });
           })
           .catch(() => {});
       }

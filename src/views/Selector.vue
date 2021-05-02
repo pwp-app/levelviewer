@@ -92,7 +92,9 @@ export default {
     },
     handleDbOpened() {
       this.setDbPath(this.selectedPath);
-      this.$router.push('/viewer');
+      this.$router.push({
+        name: 'viewer',
+      });
     },
     // ui events
     handleTypeChanged(type) {

@@ -8,18 +8,18 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'Selector',
+    name: 'selector',
     component: Selector,
   },
   {
     path: '/viewer',
-    name: 'Viewer',
+    name: 'viewer',
     component: Viewer,
   },
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: process.env.IS_ELECTRON ? 'hash' : 'history',
   base: process.env.BASE_URL,
   routes,
 });
