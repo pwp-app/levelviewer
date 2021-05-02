@@ -27,7 +27,7 @@
         <span>Value</span>
       </div>
       <div class="viewer-main-body">
-        <pre class="custom-scroll" v-text="value"></pre>
+        <pre class="custom-scroll" v-text="value" @contextmenu="handleValueContext"></pre>
       </div>
     </div>
   </div>
@@ -67,6 +67,7 @@ export default {
       window.ipcRenderer.on('copy-key', this.handleCopyKey),
       window.ipcRenderer.on('delete-key', this.handleDeleteKey),
       window.ipcRenderer.on('delete-result', this.handleDeleteResult),
+      window.ipcRenderer.on('copy-value', this.handleCopyValue),
     );
     this.$bus.$on('key-selected', this.handleKeySelected);
   },
@@ -148,6 +149,26 @@ export default {
         // eslint-disable-next-line no-console
         console.error('Failed to delete key.', result.err);
       }
+    },
+    handleValueContext(e) {
+      window.ipcRenderer.send('popup-menu', {
+        position: {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        template: [
+          {
+            label: this.$t('menu.copy'),
+            action: {
+              type: 'copy-value',
+            },
+          },
+        ],
+      });
+    },
+    handleCopyValue() {
+      const selection = window.getSelection().toString();
+      navigator.clipboard.writeText(selection);
     },
   },
 };

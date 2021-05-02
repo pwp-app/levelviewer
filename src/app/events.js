@@ -120,6 +120,9 @@ const events = {
               win.webContents.send('copy-key', key);
             };
           }
+          if (type === 'copy-value') {
+            win.webContents.send('copy-value');
+          }
           delete item.action;
         }
         return item;
