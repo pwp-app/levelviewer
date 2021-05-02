@@ -22,6 +22,7 @@ module.exports = {
     },
     electronBuilder: {
       preload: 'src/preload.js',
+      builderOptions: ['github'],
     },
   },
 };
