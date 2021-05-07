@@ -66,11 +66,7 @@ export default {
     // ipc events
     handlePathSelected(paths) {
       if (!Array.isArray(paths) || !paths.length) {
-        this.$message.error({
-          message: this.$t('selector.error.empty'),
-          offset: 36,
-          duration: 2000,
-        });
+        return;
       }
       this.selectedPath = paths[0];
     },
@@ -92,6 +88,7 @@ export default {
     },
     handleDbOpened() {
       this.setDbPath(this.selectedPath);
+      this.openLoading = false;
       this.$router.push({
         name: 'viewer',
       });
@@ -104,7 +101,15 @@ export default {
       window.ipcRenderer.send('select-folder', this.$t('selector.open.title'));
     },
     openDatabase() {
-      // this.openLoading = true;
+      if (!this.selectedPath) {
+        this.$message.error({
+          message: this.$t('selector.error.empty'),
+          offset: 36,
+          duration: 2000,
+        });
+        return;
+      }
+      this.openLoading = true;
       window.ipcRenderer.send('open-database', {
         type: this.selectedType,
         path: this.selectedPath,
