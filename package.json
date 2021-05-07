@@ -10,9 +10,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "electron:build": "vue-cli-service electron:build -wl --ia32 --x64",
+    "electron:build": "vue-cli-service electron:build -w --ia32 --x64",
     "electron:serve": "vue-cli-service electron:serve",
-    "electron:publish": "vue-cli-service electron:build -wl --ia32 --x64 -p always",
+    "electron:publish": "vue-cli-service electron:build -w --ia32 --x64 -p always",
     "f2elint-fix": "f2elint fix",
     "f2elint-scan": "f2elint scan",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/undefined/**/*.json\"",

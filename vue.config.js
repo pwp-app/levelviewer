@@ -31,13 +31,17 @@ module.exports = {
           perMachine: false,
           allowToChangeInstallationDirectory: true,
         },
+        mac: {
+          target: ['dmg', '7z'],
+          asar: true,
+        },
         win: {
-          target: ['nsis', 'portable'],
+          target: ['nsis', '7z'],
           defaultArch: 'x64',
           publisherName: 'pwp.app',
         },
         linux: {
-          target: ['deb', 'rpm'],
+          target: ['deb', 'rpm', '7z'],
           category: 'app.pwp.levelviewer',
         },
       },
