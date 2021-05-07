@@ -1,13 +1,18 @@
 {
   "name": "levelviewer",
   "version": "0.2.0",
-  "author": "BackRunner",
+  "author": {
+    "name": "BackRunner",
+    "email": "dev@backrunner.top",
+    "url": "https://github.com/backrunner/"
+  },
   "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "electron:build": "vue-cli-service electron:build",
+    "electron:build": "vue-cli-service electron:build -wl --ia32 --x64",
     "electron:serve": "vue-cli-service electron:serve",
+    "electron:publish": "vue-cli-service electron:build -wl --ia32 --x64 -p always",
     "f2elint-fix": "f2elint fix",
     "f2elint-scan": "f2elint scan",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/undefined/**/*.json\"",
@@ -48,6 +53,11 @@
     "vue-cli-plugin-i18n": "^2.1.0",
     "vue-template-compiler": "^2.6.11"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pwp-app/levelviewer.git"
+  },
+  "homepage": "https://github.com/pwp-app/levelviewer#readme",
   "browserslist": [
     "> 1%",
     "last 2 versions",

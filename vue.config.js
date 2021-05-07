@@ -26,8 +26,19 @@ module.exports = {
         appId: 'levelviewer.pwp.app',
         productName: 'LevelViewer',
         publish: ['github'],
+        nsis: {
+          oneClick: false,
+          perMachine: false,
+          allowToChangeInstallationDirectory: true,
+        },
         win: {
+          target: ['nsis', 'portable'],
+          defaultArch: 'x64',
           publisherName: 'pwp.app',
+        },
+        linux: {
+          target: ['deb', 'rpm'],
+          category: 'app.pwp.levelviewer',
         },
       },
     },
