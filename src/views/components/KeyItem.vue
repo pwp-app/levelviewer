@@ -12,6 +12,9 @@
 </template>
 
 <script>
+import isUtf8 from 'isutf8';
+import { toHex } from '@/utils/hex';
+
 export default {
   props: {
     index: {
@@ -30,7 +33,12 @@ export default {
   },
   computed: {
     decodedKey() {
-      return this.decoder.decode(this.source.key);
+      if (isUtf8(this.source.key)) {
+        return this.decoder.decode(this.source.key);
+      } else {
+        const hexStr = toHex(this.source.key);
+        return `Hex (${hexStr})`;
+      }
     },
   },
   created() {

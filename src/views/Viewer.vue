@@ -25,6 +25,7 @@
     <div class="viewer-main">
       <div class="viewer-main-title">
         <span>Value</span>
+        <span class="label-hex" v-if="hexMode">(Hex)</span>
       </div>
       <div class="viewer-main-body">
         <pre class="custom-scroll" v-text="value" @contextmenu="handleValueContext"></pre>
@@ -38,6 +39,8 @@ import { v4 as uuidv4 } from 'uuid';
 import VirtualList from 'vue-virtual-scroll-list';
 import keyItem from './components/KeyItem';
 import InfiniteLoading from 'vue-infinite-loading';
+import isUtf8 from 'isutf8';
+import { toHex } from '@/utils/hex';
 
 export default {
   components: {
@@ -48,11 +51,13 @@ export default {
     return {
       listItems: [],
       keyItem,
+      originalValue: null,
       value: '',
       listeners: [],
       identifier: 1,
       selected: '',
       bound: '',
+      hexMode: false,
     };
   },
   computed: {
@@ -115,7 +120,14 @@ export default {
       }
     },
     handleValueGotten(value) {
-      this.value = this.$decoder.decode(value);
+      this.originalValue = value;
+      if (isUtf8(value)) {
+        this.hexMode = false;
+        this.value = this.$decoder.decode(value);
+      } else {
+        this.hexMode = true;
+        this.value = toHex(value);
+      }
     },
     handleCopyKey(key) {
       navigator.clipboard.writeText(key);
@@ -139,7 +151,9 @@ export default {
           offset: 36,
         });
         if (result.key === this.selected) {
+          this.originalValue = null;
           this.value = '';
+          this.hexMode = false;
         }
       } else if (result.type === 'error') {
         this.$message.error({
@@ -231,6 +245,9 @@ export default {
       padding-bottom: 8px;
       user-select: none;
       color: var(--text-primary);
+      .label-hex {
+        margin-left: 4px;
+      }
     }
     &-body {
       width: 100%;
